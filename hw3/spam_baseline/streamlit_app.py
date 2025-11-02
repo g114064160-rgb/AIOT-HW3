@@ -1,12 +1,32 @@
 import os
+import sys
 import json
 import time
 from typing import Optional
 
+# Ensure repo root is on sys.path so imports like `hw3.spam_baseline` work
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
 import streamlit as st
 import joblib
 
-from hw3.spam_baseline.train import train_from_url, build_pipeline
+try:
+    from hw3.spam_baseline.train import train_from_url, build_pipeline
+except Exception:
+    # Fallback: load the train module directly from file path (handles some deployment import quirks)
+    import importlib.util
+
+    _train_path = os.path.join(os.path.dirname(__file__), "train.py")
+    if os.path.exists(_train_path):
+        spec = importlib.util.spec_from_file_location("spam_baseline.train", _train_path)
+        _train_mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_train_mod)
+        train_from_url = getattr(_train_mod, "train_from_url")
+        build_pipeline = getattr(_train_mod, "build_pipeline")
+    else:
+        raise
 
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "artifacts")
 MODEL_PATH = os.path.join(ARTIFACTS_DIR, "model.pkl")
