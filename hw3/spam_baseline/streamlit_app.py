@@ -172,15 +172,7 @@ def main():
                     if conf is not None:
                         st.progress(min(max(conf, 0.0), 1.0))
                         st.write(f"Confidence (pseudo): {conf:.2f}")
-    with col2:
-        st.write("Model")
-        if model is None:
-            st.write("No model loaded")
-        else:
-            st.write(type(model))
-
-    st.markdown("---")
-    st.markdown("This app uses a TF-IDF vectorizer + LinearSVC as a Phase1 baseline. It's intended for demo and educational purposes.")
+    
 
 
 if __name__ == "__main__":
